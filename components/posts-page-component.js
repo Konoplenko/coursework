@@ -1,8 +1,8 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
 import { posts, goToPage } from "../index.js";
-import { formatDistanceToNow } from 'https://registry.npmjs.org/date-fns/-/date-fns-4.1.0.tgz';
-import { ru } from './date-fns/locale';
+import { formatDistanceToNow } from "../node_modules/date-fns/index.js";
+import { ru } from "../node_modules/date-fns/locale/ru.js";
 
 export function renderPostsPageComponent({ appEl }) {
   const postsHtml = posts
