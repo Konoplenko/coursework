@@ -1,6 +1,7 @@
 import { USER_POSTS_PAGE } from "../routes.js";
 import { renderHeaderComponent } from "./header-component.js";
-import { posts, goToPage } from "../index.js";
+import { posts, goToPage, user, getToken } from "../index.js";
+import { likePost, dislikePost, getPosts } from "../api.js";
 import { formatDistanceToNow } from "../node_modules/date-fns/index.js";
 import { ru } from "../node_modules/date-fns/locale/ru.js";
 
@@ -23,7 +24,7 @@ export function renderPostsPageComponent({ appEl }) {
                     </div>
                     <div class="post-likes">
                       <button data-post-id="${post.id}" class="like-button">
-                        <img src="./assets/images/like-active.svg">
+                        <img src="${post.isLiked ? './assets/images/like-active.svg' : './assets/images/like-not-active.svg'}">
                       </button>
                       <p class="post-likes-text">
                         Нравится: <strong>${post.likes.length}</strong>
@@ -59,6 +60,50 @@ export function renderPostsPageComponent({ appEl }) {
       goToPage(USER_POSTS_PAGE, {
         userId: userEl.dataset.userId,
       });
+    });
+  }
+
+  for (let likeButton of document.querySelectorAll(".like-button")) {
+    likeButton.addEventListener("click", () => {
+      if (!user) {
+        goToPage(AUTH_PAGE);
+        return;
+      }
+
+      const postId = likeButton.dataset.postId;
+      const post = posts.find((post) => post.id === postId);
+      
+      if (post.isLiked) {
+        dislikePost({ token: getToken(), postId })
+          .then((response) => {
+            const updatedPost = response.post;
+            const postIndex = posts.findIndex((p) => p.id === postId);
+            posts[postIndex] = updatedPost;
+            
+            renderPostsPageComponent({ appEl });
+          })
+          .catch((error) => {
+            console.error("Ошибка при снятии лайка:", error);
+            if (error.message === "Нет авторизации") {
+              goToPage(AUTH_PAGE);
+            }
+          });
+      } else {
+        likePost({ token: getToken(), postId })
+          .then((response) => {
+            const updatedPost = response.post;
+            const postIndex = posts.findIndex((p) => p.id === postId);
+            posts[postIndex] = updatedPost;
+            
+            renderPostsPageComponent({ appEl });
+          })
+          .catch((error) => {
+            console.error("Ошибка при постановке лайка:", error);
+            if (error.message === "Нет авторизации") {
+              goToPage(AUTH_PAGE);
+            }
+          });
+      }
     });
   }
 }
