@@ -70,6 +70,19 @@ export function uploadImage({ file }) {
 }
 
 export function addPost({ token, description, imageUrl }) {
+  // Предварительная валидация на клиенте
+  if (!description || !description.trim()) {
+    return Promise.reject(new Error("Описание не может быть пустым"));
+  }
+  
+  if (description.trim().length > 500) {
+    return Promise.reject(new Error("Описание не должно превышать 500 символов"));
+  }
+
+  if (!imageUrl) {
+    return Promise.reject(new Error("Необходимо загрузить изображение"));
+  }
+
   return fetch(postsHost, {
     method: "POST",
     headers: {
@@ -79,13 +92,32 @@ export function addPost({ token, description, imageUrl }) {
       description: description.trim(),
       imageUrl: imageUrl,
     }),
-  }).then((response) => {
-    if (response.status === 400) {
-      return response.json().then((err) => {
-        throw new Error(err.error || "Неверные данные поста");
-      });
+  }).then(async (response) => {
+    if (!response.ok) {
+      let errorMessage = "Ошибка сервера";
+      
+      try {
+        const errorData = await response.json();
+        errorMessage = errorData.error || errorData.message || errorMessage;
+        
+        if (response.status === 400) {
+          if (errorMessage.includes("description")) {
+            errorMessage = "Некорректное описание: " + errorMessage;
+          } else if (errorMessage.includes("image")) {
+            errorMessage = "Проблема с изображением: " + errorMessage;
+          }
+        } else if (response.status === 401) {
+          errorMessage = "Требуется авторизация";
+        } else if (response.status === 413) {
+          errorMessage = "Изображение слишком большое";
+        }
+      } catch (e) {
+        console.error("Ошибка при разборе ответа сервера:", e);
+      }
+      
+      throw new Error(errorMessage);
     }
-    if (!response.ok) throw new Error("Ошибка сервера");
+    
     return response.json();
   });
 }
