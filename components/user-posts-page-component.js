@@ -25,6 +25,20 @@ export function renderUserPostsPageComponent({ appEl }) {
         locale: ru,
       });
 
+      let likesText = 'Нравится: ';
+      if (post.likes.length > 0) {
+        const firstLiker = post.likes[0];
+        const remainingLikes = post.likes.length - 1;
+        
+        likesText += `<strong>${firstLiker.name}</strong>`;
+        
+        if (remainingLikes > 0) {
+          likesText += ` и <strong>еще ${remainingLikes}</strong>`;
+        }
+      } else {
+        likesText += '<strong>0</strong>';
+      }
+
       return `<li class="post">
                 <div class="post-image-container">
                   <img class="post-image" src="${post.imageUrl}">
@@ -34,7 +48,7 @@ export function renderUserPostsPageComponent({ appEl }) {
                     <img src="${post.isLiked ? './assets/images/like-active.svg' : './assets/images/like-not-active.svg'}">
                   </button>
                   <p class="post-likes-text">
-                    Нравится: <strong>${post.likes.length}</strong>
+                    ${likesText}
                   </p>
                 </div>
                 <p class="post-text">

@@ -14,6 +14,20 @@ export function renderPostsPageComponent({ appEl }) {
         locale: ru,
       });
 
+      let likesText = "Нравится: ";
+      if (post.likes.length > 0) {
+        const firstLiker = post.likes[0];
+        const remainingLikes = post.likes.length - 1;
+
+        likesText += `<strong>${firstLiker.name}</strong>`;
+
+        if (remainingLikes > 0) {
+          likesText += ` и <strong>еще ${remainingLikes}</strong>`;
+        }
+      } else {
+        likesText += "<strong>0</strong>";
+      }
+
       return `<li class="post">
                     <div class="post-header" data-user-id="${post.user.id}">
                         <img src="${post.user.imageUrl}" class="post-header__user-image">
@@ -24,10 +38,10 @@ export function renderPostsPageComponent({ appEl }) {
                     </div>
                     <div class="post-likes">
                       <button data-post-id="${post.id}" class="like-button">
-                        <img src="${post.isLiked ? './assets/images/like-active.svg' : './assets/images/like-not-active.svg'}">
+                        <img src="${post.isLiked ? "./assets/images/like-active.svg" : "./assets/images/like-not-active.svg"}">
                       </button>
                       <p class="post-likes-text">
-                        Нравится: <strong>${post.likes.length}</strong>
+                        ${likesText}
                       </p>
                     </div>
                     <p class="post-text">
@@ -72,14 +86,14 @@ export function renderPostsPageComponent({ appEl }) {
 
       const postId = likeButton.dataset.postId;
       const post = posts.find((post) => post.id === postId);
-      
+
       if (post.isLiked) {
         dislikePost({ token: getToken(), postId })
           .then((response) => {
             const updatedPost = response.post;
             const postIndex = posts.findIndex((p) => p.id === postId);
             posts[postIndex] = updatedPost;
-            
+
             renderPostsPageComponent({ appEl });
           })
           .catch((error) => {
@@ -94,7 +108,7 @@ export function renderPostsPageComponent({ appEl }) {
             const updatedPost = response.post;
             const postIndex = posts.findIndex((p) => p.id === postId);
             posts[postIndex] = updatedPost;
-            
+
             renderPostsPageComponent({ appEl });
           })
           .catch((error) => {
