@@ -5,6 +5,12 @@ import { likePost, dislikePost, getPosts } from "../api.js";
 import { formatDistanceToNow } from "../node_modules/date-fns/index.js";
 import { ru } from "../node_modules/date-fns/locale/ru.js";
 
+function removeHtmlTags(text) {
+  if (!text) return "";
+  const doc = new DOMParser().parseFromString(text, "text/html");
+  return doc.body.textContent || "";
+}
+
 export function renderPostsPageComponent({ appEl }) {
   const postsHtml = posts
     .map((post) => {
@@ -46,7 +52,7 @@ export function renderPostsPageComponent({ appEl }) {
                     </div>
                     <p class="post-text">
                       <span class="user-name">${post.user.name}</span>
-                      ${post.description}
+                      ${removeHtmlTags(post.description)}
                     </p>
                     <p class="post-date">
                       ${timeAgo}
