@@ -1,5 +1,29 @@
 {
   "dependencies": {
     "date-fns": "^4.1.0"
+  },
+  "name": "coursework",
+  "version": "1.0.0",
+  "description": "MVP социальной сети для обмена фотографиями",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Konoplenko/coursework.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Konoplenko/coursework/issues"
+  },
+  "homepage": "https://github.com/Konoplenko/coursework#readme",
+  "devDependencies": {
+    "@eslint/js": "^9.27.0",
+    "eslint": "^9.27.0",
+    "globals": "^16.1.0",
+    "prettier": "^3.5.3"
   }
 }
